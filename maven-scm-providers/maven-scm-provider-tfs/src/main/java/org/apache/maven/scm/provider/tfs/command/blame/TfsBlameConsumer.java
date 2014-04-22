@@ -35,7 +35,7 @@ import java.util.List;
 public class TfsBlameConsumer
     extends AbstractConsumer
 {
-    private static final String TFS_TIMESTAMP_PATTERN = "MM/dd/yyyy";
+    private static final String TFS_TIMESTAMP_PATTERN = "yyyy/MM/dd hh:mm:ss";
 
     /* 3 username 3/13/2006 line */
     // TODO simplify
@@ -59,12 +59,18 @@ public class TfsBlameConsumer
     {
         if ( lineRegexp.match( line ) )
         {
+        	
             String revision = lineRegexp.getParen( 1 ).trim();
             String author = lineRegexp.getParen( 2 ).trim();
             String dateStr = lineRegexp.getParen( 3 ).trim();
-
-            Date date = parseDate( dateStr, null, TFS_TIMESTAMP_PATTERN );
-
+            String parseableDateString=dateStr.replace("T"," ");
+            Date date = parseDate( parseableDateString, null, TFS_TIMESTAMP_PATTERN );
+            if(date == null) {
+                if ( getLogger() != null && getLogger().isWarnEnabled() )
+                {
+                    getLogger().warn("Error in line " + line);
+                }
+            }
             lines.add( new BlameLine( date, revision, author ) );
         }
     }

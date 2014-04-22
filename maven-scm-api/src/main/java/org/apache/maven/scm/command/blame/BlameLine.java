@@ -61,7 +61,7 @@ public class BlameLine
     {
         setDate( date );
         setRevision( revision );
-        setAuthor( author );
+        setAuthor( author.replace("_", " ") );
         setCommitter( committer );
     }
 

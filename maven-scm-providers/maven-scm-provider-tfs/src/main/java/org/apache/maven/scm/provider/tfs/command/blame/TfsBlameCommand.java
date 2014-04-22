@@ -24,6 +24,7 @@ import org.apache.maven.scm.ScmFileSet;
 import org.apache.maven.scm.command.blame.AbstractBlameCommand;
 import org.apache.maven.scm.command.blame.BlameScmResult;
 import org.apache.maven.scm.provider.ScmProviderRepository;
+import org.apache.maven.scm.provider.tfs.TfsScmProviderRepository;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -41,7 +42,9 @@ public class TfsBlameCommand
     public BlameScmResult executeBlameCommand( ScmProviderRepository repo, ScmFileSet workingDirectory, String filename )
         throws ScmException
     {
-        Commandline cl = createCommandLine( workingDirectory.getBasedir(), filename );
+    	TfsScmProviderRepository tfsRepo = (TfsScmProviderRepository)repo;
+    	String tfsUrl=tfsRepo.getTfsUrl();
+        Commandline cl = createCommandLine( workingDirectory.getBasedir(), tfsUrl,filename );
 
         TfsBlameConsumer consumer = new TfsBlameConsumer( getLogger() );
         CommandLineUtils.StringStreamConsumer stderr = new CommandLineUtils.StringStreamConsumer();
@@ -63,13 +66,12 @@ public class TfsBlameCommand
         return new BlameScmResult( cl.toString(), consumer.getLines() );
     }
 
-    public static Commandline createCommandLine( File workingDirectory, String filename )
+    public static Commandline createCommandLine( File workingDirectory, String tfsUrl, String filename )
     {
         Commandline command = new Commandline();
         command.setWorkingDirectory( workingDirectory );
-        command.setExecutable( "tfpt" );
-        command.createArg().setValue( "annotate" );
-        command.createArg().setValue( "/noprompt" );
+        command.setExecutable( "tfsblame" );
+        command.createArg().setValue("/url:" +tfsUrl);
         command.createArg().setValue( filename );
         return command;
     }

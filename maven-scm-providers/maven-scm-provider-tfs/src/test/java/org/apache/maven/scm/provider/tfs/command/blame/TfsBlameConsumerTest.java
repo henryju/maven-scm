@@ -28,6 +28,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Evgeny Mandrikov
@@ -56,11 +59,14 @@ public class TfsBlameConsumerTest
 
         BlameLine line1 = (BlameLine) consumer.getLines().get( 0 );
         Assert.assertEquals( "3", line1.getRevision() );
-        Assert.assertEquals( "hatusr01", line1.getAuthor() );
-
+        Assert.assertEquals( "peter stevens", line1.getAuthor() );
+        Date lineDate=line1.getDate();
+        DateFormat df=new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        Date expectedDate=df.parse("2006/12/13 14:55:03");
+        Assert.assertEquals(new Date(), lineDate);
         BlameLine line2 = (BlameLine) consumer.getLines().get( 1 );
         Assert.assertEquals( "4", line2.getRevision() );
-        Assert.assertEquals( "buckh", line2.getAuthor() );
+        Assert.assertEquals( "stevens, robbert leon", line2.getAuthor() );
     }
 
 }
